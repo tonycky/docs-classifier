@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Image Classification with CLIP</title>
+  </head>
+  <body>
+    <h1>Image Classification with CLIP</h1>
+    <form method="POST" enctype="multipart/form-data">
+      <label for="file">Upload an image:</label>
+      <input type="file" name="file" id="file" required /><br /><br />
+
+      <label for="labels">Enter labels (comma-separated):</label>
+      <input type="text" name="labels" id="labels" required /><br /><br />
+      <p>
+        Examples: "a utility bill for electricity, water, or gas services", "a
+        telecommunication bill for mobile, internet, or cable services", "a bank
+        statement or document issued by a bank", "an insurance policy or
+        document issued by an insurance company", "a government-issued document
+        from Hong Kong"
+      </p>
+
+      <button type="submit">Classify</button>
+    </form>
+
+    <h2>Result:</h2>
+    <p id="result"></p>
+
+    <script>
+      document
+        .querySelector("form")
+        .addEventListener("submit", async function (event) {
+          event.preventDefault();
+
+          const formData = new FormData(this);
+          const response = await fetch("http://192.168.1.30:5001/", {
+            method: "POST",
+            body: formData,
+          });
+
+          const data = await response.json();
+          document.getElementById("result").textContent = data.result;
+        });
+    </script>
+  </body>
+</html>
