@@ -4,15 +4,72 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Image Classification with CLIP</title>
+    <style>
+      table {
+        width: 50%;
+        border-collapse: collapse;
+        margin-top: 20px;
+      }
+      table,
+      th,
+      td {
+        border: 1px solid black;
+      }
+      th,
+      td {
+        padding: 10px;
+        text-align: left;
+      }
+      th {
+        background-color: #f2f2f2;
+      }
+      .loading {
+        display: none;
+        color: blue;
+        font-weight: bold;
+      }
+      .success {
+        display: none;
+        color: green;
+        font-weight: bold;
+      }
+      .error {
+        display: none;
+        color: red;
+        font-weight: bold;
+      }
+      button:disabled {
+        background-color: #cccccc;
+        cursor: not-allowed;
+      }
+      textarea {
+        width: 100%;
+        box-sizing: border-box; /* Ensure padding and border are included in the width */
+        resize: none; /* Disable manual resizing */
+        overflow: hidden; /* Hide the scrollbar */
+        min-height: 40px; /* Set a minimum height */
+      }
+    </style>
   </head>
   <body>
     <h1>Image Classification with CLIP</h1>
     <form method="POST" enctype="multipart/form-data">
-      <label for="file">Upload an image:</label>
+      <h2>
+        Current Model:
+        <span id="model-name">openai/clip-vit-large-patch14</span>
+      </h2>
+      <label for="file">Upload an image or PDF:</label>
       <input type="file" name="file" id="file" required /><br /><br />
 
-      <label for="labels">Enter labels (comma-separated):</label>
-      <input type="text" name="labels" id="labels" required /><br /><br />
+      <label for="labels">Enter labels (comma-separated):</label><br />
+      <textarea
+        name="labels"
+        id="labels"
+        rows="1"
+        placeholder="Enter labels here..."
+        required
+      ></textarea
+      ><br /><br />
       <p>
         Examples: "a utility bill for electricity, water, or gas services", "a
         telecommunication bill for mobile, internet, or cable services", "a bank
@@ -21,26 +78,112 @@
         from Hong Kong"
       </p>
 
-      <button type="submit">Classify</button>
+      <button type="submit" id="submit-button">Classify</button>
     </form>
+
+    <!-- Loading, Success, and Error Messages -->
+    <div id="loading" class="loading">Processing... Please wait.</div>
+    <div id="success" class="success">Classification successful!</div>
+    <div id="error" class="error"></div>
 
     <h2>Result:</h2>
     <p id="result"></p>
 
+    <h3>Scores:</h3>
+    <table id="scores-table">
+      <thead>
+        <tr>
+          <th>Label</th>
+          <th>Probability</th>
+        </tr>
+      </thead>
+      <tbody>
+        <!-- Scores will be dynamically inserted here -->
+      </tbody>
+    </table>
+
     <script>
+      // Function to auto-resize the textarea
+      function autoResizeTextarea() {
+        const textarea = document.getElementById("labels");
+        textarea.style.height = "auto"; // Reset height to auto
+        textarea.style.height = textarea.scrollHeight + "px"; // Set height to scroll height
+      }
+
+      // Attach the auto-resize function to the textarea's input event
+      document
+        .getElementById("labels")
+        .addEventListener("input", autoResizeTextarea);
+
+      // Initial resize in case there's pre-filled content
+      autoResizeTextarea();
+
+      // Form submission handler
       document
         .querySelector("form")
         .addEventListener("submit", async function (event) {
           event.preventDefault();
 
-          const formData = new FormData(this);
-          const response = await fetch("http://192.168.1.30:5001/", {
-            method: "POST",
-            body: formData,
-          });
+          // Disable the submit button and show loading message
+          const submitButton = document.getElementById("submit-button");
+          submitButton.disabled = true;
+          document.getElementById("loading").style.display = "block";
+          document.getElementById("success").style.display = "none";
+          document.getElementById("error").style.display = "none";
 
-          const data = await response.json();
-          document.getElementById("result").textContent = data.result;
+          try {
+            const formData = new FormData(this);
+            const response = await fetch("http://192.168.1.30:5001/", {
+              method: "POST",
+              body: formData,
+            });
+
+            if (!response.ok) {
+              // Handle server errors (e.g., server busy)
+              const errorData = await response.json();
+              throw new Error(
+                errorData.error ||
+                  "An error occurred while processing the request."
+              );
+            }
+
+            const data = await response.json();
+
+            // Update the result and scores
+            document.getElementById(
+              "result"
+            ).textContent = `Predicted Label: ${data.result}`;
+            document.getElementById("model-name").textContent = data.model_name;
+
+            // Clear previous scores
+            const tbody = document.querySelector("#scores-table tbody");
+            tbody.innerHTML = "";
+
+            // Add new scores
+            for (const [label, score] of Object.entries(data.scores)) {
+              const row = document.createElement("tr");
+              const labelCell = document.createElement("td");
+              const scoreCell = document.createElement("td");
+
+              labelCell.textContent = label;
+              scoreCell.textContent = score.toFixed(4); // Format to 4 decimal places
+
+              row.appendChild(labelCell);
+              row.appendChild(scoreCell);
+              tbody.appendChild(row);
+            }
+
+            // Show success message
+            document.getElementById("success").style.display = "block";
+          } catch (error) {
+            // Show error message
+            document.getElementById("error").textContent = error.message;
+            document.getElementById("error").style.display = "block";
+          } finally {
+            // Re-enable the submit button and hide loading message
+            submitButton.disabled = false;
+            document.getElementById("loading").style.display = "none";
+          }
         });
     </script>
   </body>
