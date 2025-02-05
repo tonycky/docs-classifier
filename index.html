@@ -5,6 +5,32 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Image Classification with CLIP</title>
     <style>
+      /* Navigation bar styles */
+      .navbar {
+        background-color: #f8f9fa;
+        padding: 1rem;
+        margin-bottom: 2rem;
+        border-bottom: 1px solid #dee2e6;
+      }
+      .nav-links {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+        display: flex;
+        gap: 2rem;
+      }
+      .nav-links li a {
+        text-decoration: none;
+        color: #333;
+        font-weight: bold;
+      }
+      .nav-links li a:hover {
+        color: #007bff;
+      }
+      .nav-links li a.active {
+        color: #007bff;
+      }
+      /* Existing styles */
       table {
         width: 50%;
         border-collapse: collapse;
@@ -44,14 +70,21 @@
       }
       textarea {
         width: 100%;
-        box-sizing: border-box; /* Ensure padding and border are included in the width */
-        resize: none; /* Disable manual resizing */
-        overflow: hidden; /* Hide the scrollbar */
-        min-height: 40px; /* Set a minimum height */
+        box-sizing: border-box;
+        resize: none;
+        overflow: hidden;
+        min-height: 40px;
       }
     </style>
   </head>
   <body>
+    <nav class="navbar">
+      <ul class="nav-links">
+        <li><a href="/" class="active">Classifier</a></li>
+        <li><a href="/qwen.html">Qwen</a></li>
+      </ul>
+    </nav>
+
     <h1>Image Classification with CLIP</h1>
     <form method="POST" enctype="multipart/form-data">
       <h2>
@@ -133,10 +166,13 @@
 
           try {
             const formData = new FormData(this);
-            const response = await fetch("https://classifier.middlerookies.com/", {
-              method: "POST",
-              body: formData,
-            });
+            const response = await fetch(
+              "https://classifier.middlerookies.com/",
+              {
+                method: "POST",
+                body: formData,
+              }
+            );
 
             if (!response.ok) {
               // Handle server errors (e.g., server busy)

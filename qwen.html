@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Qwen Page</title>
+    <style>
+      /* Navigation bar styles */
+      .navbar {
+        background-color: #f8f9fa;
+        padding: 1rem;
+        margin-bottom: 2rem;
+        border-bottom: 1px solid #dee2e6;
+      }
+      .nav-links {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+        display: flex;
+        gap: 2rem;
+      }
+      .nav-links li a {
+        text-decoration: none;
+        color: #333;
+        font-weight: bold;
+      }
+      .nav-links li a:hover {
+        color: #007bff;
+      }
+      .nav-links li a.active {
+        color: #007bff;
+      }
+      /* Existing styles */
+      table {
+        width: 50%;
+        border-collapse: collapse;
+        margin-top: 20px;
+      }
+      table,
+      th,
+      td {
+        border: 1px solid black;
+      }
+      th,
+      td {
+        padding: 10px;
+        text-align: left;
+      }
+      th {
+        background-color: #f2f2f2;
+      }
+      .loading {
+        display: none;
+        color: blue;
+        font-weight: bold;
+      }
+      .success {
+        display: none;
+        color: green;
+        font-weight: bold;
+      }
+      .error {
+        display: none;
+        color: red;
+        font-weight: bold;
+      }
+      button:disabled {
+        background-color: #cccccc;
+        cursor: not-allowed;
+      }
+      textarea {
+        width: 100%;
+        box-sizing: border-box;
+        resize: none;
+        overflow: hidden;
+        min-height: 40px;
+      }
+    </style>
+  </head>
+  <body>
+    <nav class="navbar">
+      <ul class="nav-links">
+        <li><a href="/">Classifier</a></li>
+        <li><a href="/qwen" class="active">Qwen</a></li>
+      </ul>
+    </nav>
+
+    <div class="container">
+      <h1>Qwen Page</h1>
+      <p>
+        Welcome to the Qwen page. This is a placeholder for Qwen-related
+        content.
+      </p>
+    </div>
+  </body>
+</html>
