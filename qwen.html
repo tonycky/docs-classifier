@@ -86,11 +86,81 @@
     </nav>
 
     <div class="container">
-      <h1>Qwen Page</h1>
-      <p>
-        Welcome to the Qwen page. This is a placeholder for Qwen-related
-        content.
-      </p>
+      <h1>Qwen Chat</h1>
+      <form id="chat-form">
+        <div class="chat-input">
+          <textarea
+            id="message"
+            name="message"
+            placeholder="Type your message here..."
+            required
+          ></textarea>
+          <input type="file" id="file" name="file" />
+          <button type="submit" id="submit-button">Send</button>
+        </div>
+      </form>
+
+      <div id="loading" class="loading">Processing... Please wait.</div>
+      <div id="error" class="error"></div>
+
+      <div id="response" class="response"></div>
     </div>
+
+    <script>
+      document
+        .getElementById("chat-form")
+        .addEventListener("submit", async function (event) {
+          event.preventDefault();
+
+          const submitButton = document.getElementById("submit-button");
+          const loadingDiv = document.getElementById("loading");
+          const errorDiv = document.getElementById("error");
+          const responseDiv = document.getElementById("response");
+          const messageInput = document.getElementById("message");
+          const fileInput = document.getElementById("file");
+
+          submitButton.disabled = true;
+          loadingDiv.style.display = "block";
+          errorDiv.style.display = "none";
+
+          try {
+            const formData = new FormData();
+            formData.append("query", messageInput.value);
+
+            if (fileInput.files.length > 0) {
+              formData.append("file", fileInput.files[0]);
+            }
+
+            const response = await fetch(
+              "https://qwenvl3b.project-ax.party/v1/chat/completions",
+              {
+                method: "POST",
+                body: formData,
+              }
+            );
+
+            if (!response.ok) {
+              throw new Error("Failed to get response from the server");
+            }
+
+            const data = await response.json();
+            responseDiv.innerHTML = `<p><strong>Response:</strong><br>${data.choices[0].message.content}</p>`;
+            messageInput.value = "";
+          } catch (error) {
+            errorDiv.textContent = error.message;
+            errorDiv.style.display = "block";
+          } finally {
+            submitButton.disabled = false;
+            loadingDiv.style.display = "none";
+          }
+        });
+
+      // Auto-resize textarea
+      const messageTextarea = document.getElementById("message");
+      messageTextarea.addEventListener("input", function () {
+        this.style.height = "auto";
+        this.style.height = this.scrollHeight + "px";
+      });
+    </script>
   </body>
 </html>
