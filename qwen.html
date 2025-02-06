@@ -89,12 +89,15 @@
       <h1>Qwen2.5-VL-3B- Chat</h1>
       <form id="chat-form">
         <div class="chat-input">
+          Prompt:
           <textarea
             id="message"
             name="message"
             placeholder="Type your message here..."
             required
-          ></textarea>
+          >
+          Please return the type of the document and extract the address in json format "{"type":"type","address":"address"}"
+        </textarea>
           <input type="file" id="file" name="file" />
           <button type="submit" id="submit-button">Send</button>
         </div>
