@@ -144,7 +144,7 @@
             }
 
             const data = await response.json();
-            responseDiv.innerHTML = `<p><strong>Response:</strong><br>${data.choices[0].message.content}</p>`;
+            responseDiv.innerHTML = `<p><strong>Response:</strong><br>${data}</p>`;
             messageInput.value = "";
           } catch (error) {
             errorDiv.textContent = error.message;
